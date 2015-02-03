@@ -35,7 +35,8 @@ public class PicActivity extends Activity {
 				img = FP.ReadImage("img.png");
 				img = FP.FindEdges(img);
 				Mat lines = FP.FindLines(img);
-				img = FP.FindWallFloorBoundary(lines, img);
+				FP.FindWallFloorBoundary(lines, img);
+				img = FP.FindFloor(img);
 				//img = FP.Smooth(img);
 				
 				Thread saver = new Thread (new Runnable() {

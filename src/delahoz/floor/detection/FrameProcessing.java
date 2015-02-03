@@ -2,6 +2,7 @@ package delahoz.floor.detection;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -120,7 +121,7 @@ public class FrameProcessing extends Activity {
 		return lines;
 	}
 
-	public Mat FindWallFloorBoundary(Mat lines, Mat img) {
+	public void FindWallFloorBoundary(Mat lines, Mat img) {
 		Mat imgColor = new Mat();
 		Imgproc.cvtColor(img, imgColor, Imgproc.COLOR_GRAY2RGB);
 		int width = img.cols();
@@ -141,7 +142,7 @@ public class FrameProcessing extends Activity {
 
 			double[] vec = lines.get(0, x);
 			double x1 = vec[0], y1 = vec[1], x2 = vec[2], y2 = vec[3];
-			Log.i("Lines Coordinates", ""+x1+","+y1+"-"+x2+","+y2);
+			Log.i("Lines Coordinates", "" + x1 + "," + y1 + "-" + x2 + "," + y2);
 			double angle;
 			double dy = (y2 - y1);
 			double dx = (x2 - x1);
@@ -157,18 +158,14 @@ public class FrameProcessing extends Activity {
 
 				// if line endpoint is below height/2 then it is a possible line
 				// that collide with floor
-				if (line.getEnd().y>height/2)
+				if (line.getEnd().y > height / 2)
 					// discard line with length below 100
-					if (line.getLength()> 100)
+					if (line.getLength() > 100)
 						// split lines into left and right lines
 						if (endpoint1.x < width / 2) {
 							vertical_lines_left.add(line);
-							Core.line(imgColor, endpoint1, endpoint2, new Scalar(255, 0,
-									0), 2);
 						} else if (endpoint1.x > width / 2) {
 							vertical_lines_right.add(line);
-							Core.line(imgColor, endpoint1, endpoint2, new Scalar(0, 0,
-									255), 2);
 						}
 
 			}
@@ -179,52 +176,59 @@ public class FrameProcessing extends Activity {
 
 				// if the line endpoint is below height/2 then it is a
 				// possible wall-floor line
-				if (line.getEnd().y>height/2)
+				if (line.getEnd().y > height / 2)
 					// discard line with length below 100
 					if (line.getLength() > 100)
 						// split lines into left and right lines
 						if (endpoint1.x < width / 2) {
 							obliques_lines_left.add(line);
-							Core.line(imgColor, endpoint1, endpoint2, new Scalar(255, 0,
-									0), 2);
 						} else if (endpoint1.x > width / 2) {
 							obliques_lines_right.add(line);
-							Core.line(imgColor, endpoint1, endpoint2, new Scalar(0, 0,
-									255), 2);
 						}
 			}
 
 			if (Math.abs(angle) - 0 > -5 && Math.abs(angle) - 0 < 5) {
-				Core.line(imgColor, endpoint1, endpoint2, new Scalar(0, 0, 255), 2);
 
 			}
 
 		}
-
-		return imgColor;
 	}
 
 	public Mat FindFloor(Mat img) {
 
-		return img;
-	}
+		Mat imgColor = new Mat();
+		Imgproc.cvtColor(img, imgColor, Imgproc.COLOR_GRAY2RGB);
 
-	private double Max(ArrayList<Line> list) {
-		int size = list.size();
-
-		for (int i = 0; i < size; i++) {
-			if (i == 0) {
-
-			}
-
+		Iterator<Line> iter = vertical_lines_left.iterator();
+		while (iter.hasNext()) {
+			Line temp = iter.next();
+			Core.line(imgColor, temp.getStart(), temp.getEnd(), new Scalar(255,
+					0, 0), 2);
 		}
-		double temp = 0;
-		return temp;
-	}
 
-	private double Max(ArrayList<Line> list, int index) {
-		double temp = 0;
-		return temp;
+		iter = vertical_lines_right.iterator();
+		while (iter.hasNext()) {
+			Line temp = iter.next();
+			Core.line(imgColor, temp.getStart(), temp.getEnd(), new Scalar(0,
+					0, 255), 2);
+			Core.line(imgColor, temp.getEnd(), temp.getEnd(), new Scalar(255,
+					0, 255), 10);
+		}
+
+		iter = obliques_lines_left.iterator();
+		while (iter.hasNext()) {
+			Line temp = iter.next();
+			Core.line(imgColor, temp.getStart(), temp.getEnd(), new Scalar(255,
+					255, 0), 2);
+		}
+
+		iter = obliques_lines_right.iterator();
+		while (iter.hasNext()) {
+			Line temp = iter.next();
+			Core.line(imgColor, temp.getStart(), temp.getEnd(), new Scalar(0,
+					255, 255), 2);
+		}
+		return imgColor;
 	}
 
 }
