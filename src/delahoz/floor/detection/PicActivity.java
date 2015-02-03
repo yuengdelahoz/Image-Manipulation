@@ -9,6 +9,7 @@ import com.example.floor_detection.R;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 public class PicActivity extends Activity {
@@ -35,7 +36,9 @@ public class PicActivity extends Activity {
 				img = FP.ReadImage("img.png");
 				img = FP.FindEdges(img);
 				Mat lines = FP.FindLines(img);
-				img = FP.FindWallFloorBoundary(lines, img);
+				FP.FindWallFloorBoundary(lines, img);
+				Log.i("Image_Type", ""+img.type());
+				img = FP.FindFloor(lines);
 				//img = FP.Smooth(img);
 				
 				Thread saver = new Thread (new Runnable() {
