@@ -7,6 +7,7 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 	private boolean mIsJavaCamera = true;
 	private Mat mIntermediateMat;
 	private FrameProcessing FP;
+	int k=100000;
 
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 		@Override
@@ -39,6 +41,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 			}
 		}
 	};
+	private Mat img;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,17 +97,24 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 	@Override
 	public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
 		// return inputFrame.gray();
-		
-		Mat img = inputFrame.rgba();
-		img = FP.FindEdges(img);
-		Mat lines = FP.FindLines(img);
-		FP.FindWallFloorBoundary(lines, img);
-		img = FP.FindFloor(img);
-		//img = FP.Smooth(img);
-		
-		
-		
 
+		img = inputFrame.rgba();
+		Imgproc.cvtColor(img, img, Imgproc.COLOR_RGB2BGR);
+		Log.i("TYPE INPUT_IMAGE", ""+img.type());
+		
+//		img = FP.FindEdges(img);
+//		Log.i("TYPE EDGES", ""+img.type());
+//		
+//		Mat lines = FP.FindLines(img);
+//		Log.i("TYPE LINES", ""+img.type());
+
+//		FP.FindWallFloorBoundary(lines, img);
+		
+//		img = FP.FindFloor(inputFrame.rgba());
+//		img = FP.drawLines(inputFrame.rgba());
+		
+		FP.SaveImage(img, "outputImg"+k+".png");
+		k++;
 		return (img);
 
 	}
