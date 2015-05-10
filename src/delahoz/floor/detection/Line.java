@@ -20,6 +20,7 @@ public class Line {
 			start = endp2;
 			end = endp1;
 		}
+		calculateSlope();
 		calculateAngle();
 		calculateLength();
 
@@ -63,6 +64,15 @@ public class Line {
 		double sterm = Math.pow(end.y - start.y, 2);
 		length = Math.sqrt(fterm + sterm);
 	}
+	
+	private void calculateSlope(){
+		double dy = (end.y - start.y);
+		double dx = (end.x - start.x);
+		if (dx==0) m = 9999999999999999.9;
+		else
+		m = dy / dx;
+
+	}
 
 	public Point getStart() {
 		return start;
@@ -72,14 +82,13 @@ public class Line {
 		return end;
 	}
 
-	public double Slope() {
-		m = (end.y - start.y) / (end.x - start.x);
+	public double getSlope() {
 		return m;
 	}
 
 	public double yIntercept() {
 		double b;
-		b = start.y - Slope() * start.x;
+		b = start.y - m * start.x;
 		return b;
 
 	}
